@@ -218,7 +218,8 @@ public class StockQuoteAnalyzerTests {
 		Assert.assertEquals(analyzer.getPercentChangeSinceOpen(), percentChange, 0.01);
 	}
 	
-	
+	// Catches Issue #1
+	// Catches Issue #2
 	@Test(dataProvider = "normalOperationDataProvider")
 	public void testGetChangeSinceLastCheckShouldReturnCorrectChangeWhenCalled(StockQuote firstReturn, StockQuote secondReturn, int happyMusicCount, int sadMusicCount,
 			double percentChange) throws Exception {
