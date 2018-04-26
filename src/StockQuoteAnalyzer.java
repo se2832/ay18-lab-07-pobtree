@@ -112,9 +112,16 @@ public class StockQuoteAnalyzer {
 		// Get a new quote.
 		try {
 			StockQuoteInterface temp = this.stockQuoteSource.getCurrentQuote();
-
 			this.previousQuote = currentQuote;
-			this.currentQuote = this.previousQuote;
+
+			/*
+			 Fixes Issue #2 - After 2 calls of refresh(), getChangeSinceLastCheck() would
+			 	report no quote had ever been retrieved.
+
+             currentQuote was being set to previousQuote immediately
+             	after previousQuote was changed to currentQuote
+			 */
+			this.currentQuote = temp;
 		} catch (Exception e) {
 			throw new StockTickerConnectionError("Unable to connect with Stock Ticker Source.");
 		}
