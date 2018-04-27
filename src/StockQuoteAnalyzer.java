@@ -95,7 +95,14 @@ public class StockQuoteAnalyzer {
 			throw new StockTickerConnectionError("Symbol " + symbol + "not found.");
 		}
 		if (stockQuoteSource == null) {
-			throw new InvalidStockSymbolException("The source for stock quotes can not be null");
+
+			/*
+			Fixes Issue #7 - Constructing StockQuoteAnalyzer with
+				null source throws wrong exception.
+
+			Exception being thrown was Invalid StockSymbolException and not NullPointerException
+			*/
+			throw new NullPointerException("The source for stock quotes can not be null");
 		}
 		this.stockQuoteSource = stockQuoteSource;
 		this.audioPlayer = audioPlayer;

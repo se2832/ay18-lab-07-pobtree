@@ -47,7 +47,8 @@ public class StockQuoteAnalyzerTests {
 
 		//Assert
 	}
-	
+
+	// Catches Issue #7
 	@Test(expectedExceptions = NullPointerException.class)
 	public void testShouldThrowExceptionWhenConstructingWithNullSource() throws NullPointerException, InvalidStockSymbolException, StockTickerConnectionError
 	{
@@ -56,6 +57,7 @@ public class StockQuoteAnalyzerTests {
 		analyzer = new StockQuoteAnalyzer("DIS", null, mockedStockTickerAudio);
 
 		//Assert
+		//Exception caught by @Test
 	}
 
 	@Test(expectedExceptions = StockTickerConnectionError.class)
