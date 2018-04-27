@@ -247,7 +247,10 @@ public class StockQuoteAnalyzer {
 			throw new InvalidAnalysisState("A second update has not yet occurred.");
 		}
 
-		return currentQuote.getLastTrade() - previousQuote.getChange();
+		// Fix issue #3: getChangeSinceLastCheck was returning wrong value
+		//
+		// It was subtracting the previous quote's change rather than the previous quote's last trade
+		return currentQuote.getLastTrade() - previousQuote.getLastTrade();
 	}
 
 	/**

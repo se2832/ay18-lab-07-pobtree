@@ -220,6 +220,7 @@ public class StockQuoteAnalyzerTests {
 	
 	// Catches Issue #1
 	// Catches Issue #2
+	// Catches Issue #3
 	@Test(dataProvider = "normalOperationDataProvider")
 	public void testGetChangeSinceLastCheckShouldReturnCorrectChangeWhenCalled(StockQuote firstReturn, StockQuote secondReturn, int happyMusicCount, int sadMusicCount,
 			double percentChange) throws Exception {
