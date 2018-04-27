@@ -289,9 +289,45 @@ public class StockQuoteAnalyzerTests {
         Assert.assertEquals(analyzer.getPreviousOpen(), firstReturn.getOpen(), 0.01);
 	}
 
-	
+	/**
+	 * Made by: Robert Laughlin
+	 */
+	@Test
+	public void getSymbolShouldReturnSymbolStockAnalyzerWasCreatedWith() throws  Exception{
+		// Arrange
+		String symbolUsed = "F";
+		analyzer = new StockQuoteAnalyzer(symbolUsed, mockedStockQuoteGenerator,
+				mockedStockTickerAudio);
 
-	
+		// Act
+		String returnedSymbol = analyzer.getSymbol();
+
+		// Assert
+		Assert.assertEquals(returnedSymbol, symbolUsed);
+	}
+
+	/**
+	 * Made by: Robert Laughlin
+	 */
+	@Test(dataProvider = "normalOperationDataProvider")
+	public void getCurrentQuoteShouldReturnTheCurrentQuoteWhenCalled(
+			StockQuote firstReturn, StockQuote secondReturn, int happyMusicCount,
+			int sadMusicCount, double percentChange) throws Exception {
+		// Arrange
+		when(mockedStockQuoteGenerator.getCurrentQuote()).thenReturn(firstReturn, secondReturn);
+		analyzer = new StockQuoteAnalyzer("F", mockedStockQuoteGenerator,
+				mockedStockTickerAudio);
+
+		// Act
+		analyzer.refresh();
+		StockQuoteInterface firstActual = analyzer.getCurrentQuote();
+		analyzer.refresh();
+		StockQuoteInterface secondActual = analyzer.getCurrentQuote();
+
+		// Assert
+		Assert.assertEquals(firstActual, firstReturn);
+		Assert.assertEquals(secondActual, secondReturn);
+	}
 	
 	
 }
