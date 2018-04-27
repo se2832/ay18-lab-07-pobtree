@@ -154,7 +154,7 @@ public class StockQuoteAnalyzerTests {
 		verify(mockedStockTickerAudio, times(0)).playSadMusic();
 	}
 
-    @Test
+    @Test(expectedExceptions = InvalidAnalysisState.class)
 	public void testShouldGetChangeSinceLastCheckOneUpdate() throws Exception
 	{
 		// Arrange - Setup the expected calls.
