@@ -174,7 +174,15 @@ public class StockQuoteAnalyzer {
 	 *             has not yet been retrieved.
 	 */
 	public double getPreviousOpen() throws InvalidAnalysisState {
-		if (currentQuote != null) {
+
+		/*
+		Fixes Issue #5 - getPreviousOpen() throws incorrect exception
+		 	when no quote has been retrieved yet.
+
+		Exception was being thrown when currentQuote was != null rather than == null
+			This caused currentQuote.getOpen() call to cause a NullPointerException
+		*/
+		if (currentQuote == null) {
 			throw new InvalidAnalysisState("No quote has ever been retrieved.");
 		}
 		return currentQuote.getOpen();
