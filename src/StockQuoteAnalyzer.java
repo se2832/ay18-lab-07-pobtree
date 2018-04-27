@@ -227,7 +227,10 @@ public class StockQuoteAnalyzer {
 			throw new InvalidAnalysisState("No quote has ever been retrieved.");
 		}
 
-		return Math.round((10000 * this.currentQuote.getChange() / this.currentQuote.getOpen())) % 100.0;
+		// Fix issue #6: getPercentChangeSinceLastOpen() not returning correct value
+		//
+		// The formula below was using mod 100 instead of dividing by 100
+		return Math.round((10000 * this.currentQuote.getChange() / this.currentQuote.getOpen())) / 100.0;
 	}
 
 	/**
