@@ -189,6 +189,7 @@ public class StockQuoteAnalyzerTests {
 		};
 	}
 
+	// Catches Issue #4
 	@Test(dataProvider = "normalOperationDataProvider")
 	public void testGetPercentChangeSinceLastOpenShouldReturnCorrectPercentChangedWhenCalled(StockQuote firstReturn, StockQuote secondReturn, int happyMusicCount, int sadMusicCount,
 			double percentChange) throws Exception {
