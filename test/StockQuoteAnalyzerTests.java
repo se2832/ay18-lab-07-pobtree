@@ -37,7 +37,8 @@ public class StockQuoteAnalyzerTests {
 		mockedStockTickerAudio = null;
 
 	}
-	
+
+	// Caches Issue #9
 	@Test(expectedExceptions = InvalidStockSymbolException.class)
 	public void testShouldThrowExceptionWhenConstructingWithInvalidStockSymbol() throws NullPointerException, InvalidStockSymbolException, StockTickerConnectionError
 	{
@@ -46,6 +47,7 @@ public class StockQuoteAnalyzerTests {
 		analyzer = new StockQuoteAnalyzer("ZZZZZZZZZ", mockedStockQuoteGenerator, mockedStockTickerAudio);
 
 		//Assert
+		//Exception caught by @Test
 	}
 
 	// Catches Issue #7

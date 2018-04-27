@@ -92,7 +92,15 @@ public class StockQuoteAnalyzer {
 		if (StockTickerListing.getSingleton().isValidTickerSymbol(symbol)) {
 			this.symbol = symbol;
 		} else {
-			throw new StockTickerConnectionError("Symbol " + symbol + "not found.");
+
+			/*
+			Fixes Issue #9 - Constructing StockQuoteAnalyzer with
+				invalid stock symbol throws wrong exception.
+
+			Exception being thrown was StockTickerConnectionError
+				and not InvalidStockSymbolException
+			*/
+			throw new InvalidStockSymbolException("Symbol " + symbol + " not found.");
 		}
 		if (stockQuoteSource == null) {
 
