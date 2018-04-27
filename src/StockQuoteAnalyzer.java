@@ -146,7 +146,11 @@ public class StockQuoteAnalyzer {
 				if ((this.getPercentChangeSinceOpen() > 1) || (this.getChangeSinceLastCheck()>1.00)) {
 					audioPlayer.playHappyMusic();
 				}
-				if ((this.getPercentChangeSinceOpen() < 0) && (this.getChangeSinceLastCheck()<1.00)) {
+				// Fix issue #8: Sad musid being played when it shouldn't be
+                //
+				// The first condition was checking if the percent change since open was less than zero rather
+				// than if it was less than 1%
+				if ((this.getPercentChangeSinceOpen() < -1) && (this.getChangeSinceLastCheck()<1.00)) {
 					audioPlayer.playSadMusic();
 				}
 			} catch (InvalidAnalysisState e) {
