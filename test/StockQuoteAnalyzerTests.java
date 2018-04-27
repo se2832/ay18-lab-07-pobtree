@@ -70,7 +70,8 @@ public class StockQuoteAnalyzerTests {
 
 		//Assert
 	}
-	
+
+	// Catches Issue #5
 	@Test(expectedExceptions = InvalidAnalysisState.class)
 	public void testShouldThrowExceptionWhenGetPreviousOpenInvalidAnalysisState() throws InvalidAnalysisState, NullPointerException, InvalidStockSymbolException, StockTickerConnectionError
 	{
@@ -81,6 +82,7 @@ public class StockQuoteAnalyzerTests {
 		analyzer.getPreviousOpen();
 
 		//Assert
+		// Exception caught by @Test
 	}
 	
 	@Test(expectedExceptions = InvalidAnalysisState.class)
