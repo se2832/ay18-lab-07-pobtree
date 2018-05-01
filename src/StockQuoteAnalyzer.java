@@ -88,13 +88,29 @@ public class StockQuoteAnalyzer {
 		super();
 
 		// Check the validity of the symbol.
-		if (StockTickerListing.getSingleton().isValidTickerSymbol(symbol) != true) {
+        // Fix for issue #1 - Symbol validity being incorrectly reported
+		if (StockTickerListing.getSingleton().isValidTickerSymbol(symbol)) {
 			this.symbol = symbol;
 		} else {
-			throw new StockTickerConnectionError("Symbol " + symbol + "not found.");
+
+			/*
+			Fixes Issue #9 - Constructing StockQuoteAnalyzer with
+				invalid stock symbol throws wrong exception.
+
+			Exception being thrown was StockTickerConnectionError
+				and not InvalidStockSymbolException
+			*/
+			throw new InvalidStockSymbolException("Symbol " + symbol + " not found.");
 		}
 		if (stockQuoteSource == null) {
-			throw new InvalidStockSymbolException("The source for stock quotes can not be null");
+
+			/*
+			Fixes Issue #7 - Constructing StockQuoteAnalyzer with
+				null source throws wrong exception.
+
+			Exception being thrown was Invalid StockSymbolException and not NullPointerException
+			*/
+			throw new NullPointerException("The source for stock quotes can not be null");
 		}
 		this.stockQuoteSource = stockQuoteSource;
 		this.audioPlayer = audioPlayer;
@@ -111,9 +127,16 @@ public class StockQuoteAnalyzer {
 		// Get a new quote.
 		try {
 			StockQuoteInterface temp = this.stockQuoteSource.getCurrentQuote();
-
 			this.previousQuote = currentQuote;
-			this.currentQuote = this.previousQuote;
+
+			/*
+			 Fixes Issue #2 - After 2 calls of refresh(), getChangeSinceLastCheck() would
+			 	report no quote had ever been retrieved.
+
+             currentQuote was being set to previousQuote immediately
+             	after previousQuote was changed to currentQuote
+			 */
+			this.currentQuote = temp;
 		} catch (Exception e) {
 			throw new StockTickerConnectionError("Unable to connect with Stock Ticker Source.");
 		}
@@ -132,10 +155,17 @@ public class StockQuoteAnalyzer {
 	public void playAppropriateAudio() {
 		if (audioPlayer != null) {
 			try {
-				if ((this.getPercentChangeSinceOpen() > 1) || (this.getChangeSinceLastCheck()!=1.00)) {
+				// Fix issue #4: Happy music playing when it shouldn't be
+				//
+				// this if statement was checking if the last change != $1 rather than > $1
+				if ((this.getPercentChangeSinceOpen() > 1) || (this.getChangeSinceLastCheck()>1.00)) {
 					audioPlayer.playHappyMusic();
 				}
-				if ((this.getPercentChangeSinceOpen() < 0) && (this.getChangeSinceLastCheck()<1.00)) {
+				// Fix issue #8: Sad musid being played when it shouldn't be
+                //
+				// The first condition was checking if the percent change since open was less than zero rather
+				// than if it was less than 1%
+				if ((this.getPercentChangeSinceOpen() < -1) && (this.getChangeSinceLastCheck()<1.00)) {
 					audioPlayer.playSadMusic();
 				}
 			} catch (InvalidAnalysisState e) {
@@ -163,7 +193,15 @@ public class StockQuoteAnalyzer {
 	 *             has not yet been retrieved.
 	 */
 	public double getPreviousOpen() throws InvalidAnalysisState {
-		if (currentQuote != null) {
+
+		/*
+		Fixes Issue #5 - getPreviousOpen() throws incorrect exception
+		 	when no quote has been retrieved yet.
+
+		Exception was being thrown when currentQuote was != null rather than == null
+			This caused currentQuote.getOpen() call to cause a NullPointerException
+		*/
+		if (currentQuote == null) {
 			throw new InvalidAnalysisState("No quote has ever been retrieved.");
 		}
 		return currentQuote.getOpen();
@@ -216,7 +254,10 @@ public class StockQuoteAnalyzer {
 			throw new InvalidAnalysisState("No quote has ever been retrieved.");
 		}
 
-		return Math.round((10000 * this.currentQuote.getChange() / this.currentQuote.getOpen())) % 100.0;
+		// Fix issue #6: getPercentChangeSinceLastOpen() not returning correct value
+		//
+		// The formula below was using mod 100 instead of dividing by 100
+		return Math.round((10000 * this.currentQuote.getChange() / this.currentQuote.getOpen())) / 100.0;
 	}
 
 	/**
@@ -239,7 +280,10 @@ public class StockQuoteAnalyzer {
 			throw new InvalidAnalysisState("A second update has not yet occurred.");
 		}
 
-		return currentQuote.getLastTrade() - previousQuote.getChange();
+		// Fix issue #3: getChangeSinceLastCheck was returning wrong value
+		//
+		// It was subtracting the previous quote's change rather than the previous quote's last trade
+		return currentQuote.getLastTrade() - previousQuote.getLastTrade();
 	}
 
 	/**

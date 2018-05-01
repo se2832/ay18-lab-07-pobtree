@@ -37,7 +37,8 @@ public class StockQuoteAnalyzerTests {
 		mockedStockTickerAudio = null;
 
 	}
-	
+
+	// Caches Issue #9
 	@Test(expectedExceptions = InvalidStockSymbolException.class)
 	public void testShouldThrowExceptionWhenConstructingWithInvalidStockSymbol() throws NullPointerException, InvalidStockSymbolException, StockTickerConnectionError
 	{
@@ -46,8 +47,10 @@ public class StockQuoteAnalyzerTests {
 		analyzer = new StockQuoteAnalyzer("ZZZZZZZZZ", mockedStockQuoteGenerator, mockedStockTickerAudio);
 
 		//Assert
+		//Exception caught by @Test
 	}
-	
+
+	// Catches Issue #7
 	@Test(expectedExceptions = NullPointerException.class)
 	public void testShouldThrowExceptionWhenConstructingWithNullSource() throws NullPointerException, InvalidStockSymbolException, StockTickerConnectionError
 	{
@@ -56,6 +59,7 @@ public class StockQuoteAnalyzerTests {
 		analyzer = new StockQuoteAnalyzer("DIS", null, mockedStockTickerAudio);
 
 		//Assert
+		//Exception caught by @Test
 	}
 
 	@Test(expectedExceptions = StockTickerConnectionError.class)
@@ -70,7 +74,8 @@ public class StockQuoteAnalyzerTests {
 
 		//Assert
 	}
-	
+
+	// Catches Issue #5
 	@Test(expectedExceptions = InvalidAnalysisState.class)
 	public void testShouldThrowExceptionWhenGetPreviousOpenInvalidAnalysisState() throws InvalidAnalysisState, NullPointerException, InvalidStockSymbolException, StockTickerConnectionError
 	{
@@ -81,6 +86,7 @@ public class StockQuoteAnalyzerTests {
 		analyzer.getPreviousOpen();
 
 		//Assert
+		// Exception caught by @Test
 	}
 	
 	@Test(expectedExceptions = InvalidAnalysisState.class)
@@ -148,7 +154,7 @@ public class StockQuoteAnalyzerTests {
 		verify(mockedStockTickerAudio, times(0)).playSadMusic();
 	}
 
-    @Test
+    @Test(expectedExceptions = InvalidAnalysisState.class)
 	public void testShouldGetChangeSinceLastCheckOneUpdate() throws Exception
 	{
 		// Arrange - Setup the expected calls.
@@ -189,6 +195,9 @@ public class StockQuoteAnalyzerTests {
 		};
 	}
 
+	// Catches Issue #4
+	// Catches Issue #6
+    // Catches Issue #8
 	@Test(dataProvider = "normalOperationDataProvider")
 	public void testGetPercentChangeSinceLastOpenShouldReturnCorrectPercentChangedWhenCalled(StockQuote firstReturn, StockQuote secondReturn, int happyMusicCount, int sadMusicCount,
 			double percentChange) throws Exception {
@@ -218,7 +227,9 @@ public class StockQuoteAnalyzerTests {
 		Assert.assertEquals(analyzer.getPercentChangeSinceOpen(), percentChange, 0.01);
 	}
 	
-	
+	// Catches Issue #1
+	// Catches Issue #2
+	// Catches Issue #3
 	@Test(dataProvider = "normalOperationDataProvider")
 	public void testGetChangeSinceLastCheckShouldReturnCorrectChangeWhenCalled(StockQuote firstReturn, StockQuote secondReturn, int happyMusicCount, int sadMusicCount,
 			double percentChange) throws Exception {
@@ -278,9 +289,45 @@ public class StockQuoteAnalyzerTests {
         Assert.assertEquals(analyzer.getPreviousOpen(), firstReturn.getOpen(), 0.01);
 	}
 
-	
+	/**
+	 * Made by: Robert Laughlin
+	 */
+	@Test
+	public void getSymbolShouldReturnSymbolStockAnalyzerWasCreatedWith() throws  Exception{
+		// Arrange
+		String symbolUsed = "F";
+		analyzer = new StockQuoteAnalyzer(symbolUsed, mockedStockQuoteGenerator,
+				mockedStockTickerAudio);
 
-	
+		// Act
+		String returnedSymbol = analyzer.getSymbol();
+
+		// Assert
+		Assert.assertEquals(returnedSymbol, symbolUsed);
+	}
+
+	/**
+	 * Made by: Robert Laughlin
+	 */
+	@Test(dataProvider = "normalOperationDataProvider")
+	public void getCurrentQuoteShouldReturnTheCurrentQuoteWhenCalled(
+			StockQuote firstReturn, StockQuote secondReturn, int happyMusicCount,
+			int sadMusicCount, double percentChange) throws Exception {
+		// Arrange
+		when(mockedStockQuoteGenerator.getCurrentQuote()).thenReturn(firstReturn, secondReturn);
+		analyzer = new StockQuoteAnalyzer("F", mockedStockQuoteGenerator,
+				mockedStockTickerAudio);
+
+		// Act
+		analyzer.refresh();
+		StockQuoteInterface firstActual = analyzer.getCurrentQuote();
+		analyzer.refresh();
+		StockQuoteInterface secondActual = analyzer.getCurrentQuote();
+
+		// Assert
+		Assert.assertEquals(firstActual, firstReturn);
+		Assert.assertEquals(secondActual, secondReturn);
+	}
 	
 	
 }
